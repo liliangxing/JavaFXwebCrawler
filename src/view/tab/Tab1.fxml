@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.tab.Tab1Controller">
+   <children>
+      <SplitPane dividerPositions="0.29797979797979796" layoutX="63.0" layoutY="37.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="170.0" SplitPane.resizableWithParent="false">
+               <children>
+                  <Label fx:id="lbl1" layoutX="38.0" layoutY="24.0" text="Imput a web page:" />
+                  <TextField fx:id="txt1" layoutX="27.0" layoutY="48.0" prefHeight="25.0" prefWidth="122.0" promptText="Web page" />
+                  <Button fx:id="btn1Search" layoutX="62.0" layoutY="89.0" mnemonicParsing="false" onAction="#btn1SearchClicked" text="Search" />
+                  <Separator layoutY="148.0" prefHeight="3.0" prefWidth="145.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="147.5" />
+                  <Label fx:id="lbl2" layoutX="34.0" layoutY="182.0" text="Click to save images" />
+                  <Button fx:id="btn1save" disable="true" layoutX="62.0" layoutY="290.0" mnemonicParsing="false" onAction="#btn1saveClicked" prefHeight="25.0" prefWidth="52.0" text="Save" />
+                  <TextField fx:id="txt2" layoutX="13.0" layoutY="209.0" promptText="Choose Folder..." />
+                  <Button fx:id="btn1browse" layoutX="14.0" layoutY="234.0" mnemonicParsing="false" onAction="#btn1browseClicked" prefHeight="25.0" prefWidth="149.0" text="Browse..." />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TextArea fx:id="txtArea" layoutX="57.0" layoutY="28.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="298.0" prefWidth="347.0" promptText="Images links..." AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

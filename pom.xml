@@ -1,0 +1,276 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>kr.pethub</groupId>
+  <artifactId>pethub-batch</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>pethub-batch</name>
+  <url>http://www.pethub.kr</url>
+  <description>pethub-batch</description>
+  
+  <properties>
+		<java.version>1.8</java.version>
+		<spring.version>5.1.8.RELEASE</spring.version>
+		<slf4j.version>1.7.10</slf4j.version>
+		<slf4j-log4j12.version>1.7.10</slf4j-log4j12.version>
+		<logback.version>1.0.13</logback.version>
+		<log4j.version>1.2.17</log4j.version>
+		<mysql-connector-java.version>5.1.46</mysql-connector-java.version>
+		<mybatis.version>3.5.1</mybatis.version>
+		<mybatis-spring.version>2.0.1</mybatis-spring.version>
+		<aspectj.version>1.8.4</aspectj.version>
+		<jackson.version>2.9.9</jackson.version>
+		<maven.encoding>UTF-8</maven.encoding>
+		
+		<deploy.target.dir>D:/99.tmp/spring_batch</deploy.target.dir>
+		<jar.name>pethub-batch</jar.name>
+		
+	</properties>
+	
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault> 
+			</activation>
+			<properties>
+				<environment>local</environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<environment>dev</environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>real</id>
+			<properties>
+				<environment>real</environment>
+			</properties>
+		</profile>
+		
+	</profiles>
+	
+	<dependencies>
+	    <!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-api</artifactId>
+	        <version>${slf4j.version}</version>
+    	</dependency>
+	    <dependency>
+	        <groupId>ch.qos.logback</groupId>
+	        <artifactId>logback-classic</artifactId>
+	        <version>${logback.version}</version>
+	        <exclusions>
+	            <exclusion>
+	                <groupId>org.slf4j</groupId>
+	                <artifactId>slf4j-api</artifactId>
+	            </exclusion>
+	        </exclusions>
+	        <scope>runtime</scope>
+	     </dependency>
+	     
+	  <!-- Apache Commons -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-dbcp2</artifactId>
+		    <version>2.6.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.6</version>
+		</dependency>
+				 
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- log4jdbc -->
+	    <dependency>
+		    <groupId>com.googlecode.log4jdbc</groupId>
+		    <artifactId>log4jdbc</artifactId>
+		    <version>1.2</version>
+		</dependency>
+	   
+	   <!-- DB Connector(Mysql) -->
+	   <dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql-connector-java.version}</version>
+		</dependency>
+		
+		<!-- mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>${mybatis.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>${mybatis-spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.dataformat</groupId>
+		    <artifactId>jackson-dataformat-xml</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.11.3</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.8</version>
+		</dependency>
+
+		
+	   		<!-- 암호화 -->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt-spring31</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+
+		
+	</dependencies>
+  
+	<build>
+		<resources>
+			<resource>
+			<directory>src/main/resources</directory>
+			 <excludes>
+	          <exclude>**/*.sql</exclude>
+	          <exclude>**/*.txt</exclude>
+	        </excludes>
+			</resource>
+			<resource>
+			<directory>src/main/resources-${environment}</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory> 
+			</testResource>
+		</testResources>
+		  
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${maven.encoding}</encoding>
+				</configuration>
+			</plugin>
+
+			 <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<finalName>${jar.name}</finalName>
+		        	<outputDirectory>${deploy.target.dir}</outputDirectory>
+				 <archive>
+				   <manifest>
+						<addClasspath>true</addClasspath>
+						<mainClass>application.Main</mainClass>
+						<classpathPrefix>lib/</classpathPrefix>
+				   </manifest>
+
+				    <manifestEntries>
+				        <Class-Path>./crawling/</Class-Path>
+				     </manifestEntries>
+
+				 </archive>
+				</configuration>
+			  </plugin>
+
+			  <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+				  <execution>
+					<id>copy-dependencies</id>
+					<phase>package</phase>
+					<goals>
+					    <goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<overWrite>true</overWrite>
+					    <outputDirectory>${deploy.target.dir}/lib</outputDirectory>
+					</configuration>
+				    </execution>
+				</executions>
+			  </plugin>
+			  
+		</plugins>
+	</build>
+</project>
