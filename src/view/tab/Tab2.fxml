@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.tab.Tab2Controller">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.tab.Tab2Controller">
    <children>
       <SplitPane dividerPositions="0.6984924623115578" layoutX="170.0" layoutY="37.0" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="300.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -17,17 +17,17 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <TextField fx:id="txt3" layoutX="49.0" layoutY="14.0" prefHeight="22.0" prefWidth="427.0" promptText="Keyword">https://www.ku66.net/r/5/92.html</TextField>
-                  <TextField fx:id="txt5" layoutX="489.0" layoutY="14.0" prefHeight="22.0" prefWidth="250.0" promptText="图片必须包含" />
-                  <Button fx:id="btn2search" layoutX="51.0" layoutY="59.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2searchClicked" prefHeight="25.0" prefWidth="62.0" text="Search" />
+                  <TextField fx:id="txt3" layoutX="49.0" layoutY="14.0" prefHeight="22.0" prefWidth="362.0" promptText="Keyword">https://www.ku66.net/r/5/92.html</TextField>
+                  <TextField fx:id="txt5" layoutX="469.0" layoutY="14.0" prefHeight="22.0" prefWidth="250.0" promptText="图片必须包含" />
+                  <Button fx:id="btn2search" layoutX="342.0" layoutY="60.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2searchClicked" prefHeight="35.0" prefWidth="70.0" text="Search" />
 
 
-                  <TextField fx:id="txt4" layoutX="489.0" layoutY="52.0" prefHeight="25.0" prefWidth="250.0" promptText="Choose folder...">E:\</TextField>
+                  <TextField fx:id="txt4" layoutX="469.0" layoutY="52.0" prefHeight="25.0" prefWidth="250.0" promptText="Choose folder...">E:\</TextField>
                   <Button fx:id="btn2browse" layoutX="745.0" layoutY="52.0" mnemonicParsing="false" onAction="#btn2browseClicked" text="Browse..." />
 
 
-                  <Button fx:id="btn2save" disable="false" layoutX="491.0" layoutY="83.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2saveClicked" prefHeight="25.0" prefWidth="62.0" text="Save" />
-                  <TextField fx:id="txt6" layoutX="756.0" layoutY="14.0" prefHeight="22.0" prefWidth="42.0" promptText="线程数" />
+                  <Button fx:id="btn2save" disable="false" layoutX="471.0" layoutY="86.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2saveClicked" prefHeight="25.0" prefWidth="62.0" text="Save" />
+                  <TextField fx:id="txt6" layoutX="746.0" layoutY="14.0" prefHeight="22.0" prefWidth="52.0" promptText="线程数" />
 
                </children></AnchorPane>
         </items>
