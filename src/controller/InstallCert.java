@@ -54,7 +54,7 @@ import javax.net.ssl.X509TrustManager;
 public class InstallCert {
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"www.ku66.net"};
+        args = new String[]{"pic.ku66.net"};
 
         String host;
         int port;

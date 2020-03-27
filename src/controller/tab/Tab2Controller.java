@@ -221,21 +221,24 @@ public class Tab2Controller implements CallBack{
 		index = 0;
 
 		maxPage = 0;
-		similarLinks = null;
-		similarLinks = new TreeSet<>();
-		map = null;
-		map = new HashMap<>();
+		includeCount = 0;
+		similarLinksPart.clear();
+		similarLinks.clear();
+		map.clear();
 		txtArea.clear();
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
 		keyword = txt3.getText();
-		if(urls.contains(keyword)||StringUtils.isEmpty(keyword)){
-			//已经点击过
-			txt3.setText("");
-			txt3.requestFocus();
-			return;
-		}else{
-			urls.add(keyword);
+		if(StringUtils.isEmpty(txt5.getText())) {
+			if (urls.contains(keyword) || StringUtils.isEmpty(keyword)) {
+				//已经点击过
+				txt3.setText("");
+				txt3.requestFocus();
+				return;
+			} else {
+				urls.add(keyword);
+
+			}
 		}
 		txt3.requestFocus();
 		txt3.selectAll();
@@ -290,8 +293,9 @@ public class Tab2Controller implements CallBack{
 		print("%s", StringUtils.join(wynik2,"\n"));
 		//txtArea.requestFocus();
 		txtArea.selectAll();
-		/*txt3.selectAll();
-		txt3.setDisable(false);*/
+//		txt3.requestFocus();
+//		txt3.selectAll();
+		//txt3.setDisable(false);
 	}
 
 	@FXML private void btn2browseClicked(ActionEvent event){
