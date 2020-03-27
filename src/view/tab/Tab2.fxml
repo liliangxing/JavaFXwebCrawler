@@ -26,7 +26,7 @@
                   <Button fx:id="btn2browse" layoutX="745.0" layoutY="52.0" mnemonicParsing="false" onAction="#btn2browseClicked" text="Browse..." />
 
 
-                  <Button fx:id="btn2save" disable="false" layoutX="471.0" layoutY="86.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2saveClicked" prefHeight="25.0" prefWidth="62.0" text="Save" />
+                  <Button fx:id="btn2save" disable="false" layoutX="471.0" layoutY="89.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2saveClicked" prefHeight="25.0" prefWidth="62.0" text="Save" />
                   <TextField fx:id="txt6" layoutX="746.0" layoutY="14.0" prefHeight="22.0" prefWidth="52.0" promptText="线程数" />
 
                </children></AnchorPane>
