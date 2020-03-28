@@ -6,7 +6,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.*;
 
-import controller.DownFile;
+import application.utils.DownFile;
 import javafx.stage.DirectoryChooser;
 
 import org.apache.commons.lang3.StringUtils;

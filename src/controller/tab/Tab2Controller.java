@@ -1,6 +1,6 @@
 package controller.tab;
 
-import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,17 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.imageio.ImageIO;
-
-import controller.DownFile;
+import application.utils.ClipboardUtil;
+import application.utils.DownFile;
 import controller.CallBack;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
-import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -34,7 +30,7 @@ import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
 import controller.MainController;
 
-public class Tab2Controller implements CallBack{
+public class Tab2Controller implements CallBack, FlavorListener  {
 
 	public static ExecutorService service = Executors.newFixedThreadPool(1);
 	private MainController main;
@@ -46,11 +42,35 @@ public class Tab2Controller implements CallBack{
 	@FXML public  TextField txt6;
 	@FXML private  Button btn2save;
 
+	public Clipboard systemClipboard = null ;
+
+	public void flavorsChanged(FlavorEvent e) {
+
+
+		try {
+
+			doAutoPaste();
+
+		} catch (IllegalStateException ex) {
+			ex.printStackTrace();
+		}
+	}
+	@FXML public void initialize() {
+		systemClipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+		systemClipboard.addFlavorListener(this) ;
+	}
+
+	private  void doAutoPaste(){
+		String text = ClipboardUtil.getSysClipboardText(systemClipboard);
+		if(!(!text.endsWith("\n")&& text.contains("\n")) && text.startsWith("http")) {
+			txt3.setText(text);
+		}else {
+			txt3.setText(text);
+		}
+	}
 	private String keyword, site;
 	private static List<String> urls = new ArrayList<>();
 	private int index=0;
-	private int n = 15000;
-	private String wynik1[] = new String[n];
     private List<String> wynik2 = new ArrayList<>(100);
 
 	private int maxPage = 0;
@@ -58,6 +78,7 @@ public class Tab2Controller implements CallBack{
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
 	private Map<Integer,String> map = new HashMap<>();
+	public static Tab2Controller instance ;
 
 	BufferedImage image2 = null;
 	private  Document  doc2;
@@ -90,12 +111,16 @@ public class Tab2Controller implements CallBack{
 
 
 	private void   firstGet(String site){
+		if(null==site) return;
 		String mustInclude = site.substring(0,site.lastIndexOf("/") );
-		String fileName = getImageName(site);
+		String fileName = getImageName(site).split("\\.")[0];
 		if(fileName.contains("_")){
 			mustInclude = site.split("_")[0];
-		}else if(fileName.split("\\.")[0].length()>2){
+		}else if(fileName.length()>2){
 			mustInclude = site.substring(0,site.lastIndexOf(".") );
+			if( fileName.matches(".*[a-zA-z]+[\\d]+.*")){
+				mustInclude=  site.substring(0,site.lastIndexOf("/")+1)+fileName.replaceAll("[\\d]+","");
+			}
 		}
 		doc2 = doGet(site);
 		if(null == doc2) return;
@@ -107,14 +132,16 @@ public class Tab2Controller implements CallBack{
 			String lin = link.attr("abs:href");
 			if(lin.startsWith(mustInclude) && !lin.endsWith("#")){
 				similarLinks.add(lin);
-				if(lin.startsWith(site.substring(0,site.lastIndexOf(".")))){
+				if(lin.startsWith(site.substring(0,site.lastIndexOf(".")))
+				&& !fileName.matches(".*[a-zA-z]+[\\d]+.*")){
 					similarLinksPart.add(lin);
 					includeCount++;
 				}
 				if(lin.substring(lin.lastIndexOf("/") + 1).contains(".")) {
 					try {
-						int imageName = Integer.parseInt(lin.substring(lin.lastIndexOf("/") + 1, lin.lastIndexOf("."))
-								.replaceAll("_", ""));
+						String mylin =lin.substring(lin.lastIndexOf("/") + 1, lin.lastIndexOf("."))
+								.replaceAll("[\\D]+", "");
+						int imageName = StringUtils.isEmpty(mylin)?0:Integer.parseInt(mylin);
 						maxPage = maxPage > imageName ? maxPage : imageName;
 						map.put(imageName, lin);
 					}catch (NumberFormatException e){
@@ -151,6 +178,13 @@ public class Tab2Controller implements CallBack{
 		if(includeCount>1){
 			similarLinks = similarLinksPart;
 		}
+		String reg = "(.*page=)[\\d]+(.*)";
+		if(site.matches(reg)){
+			String siteBuilder = site.replaceAll (reg, "$1"+"xxxx"+"$2");
+			for(int i=0;i< 100;i++){
+				similarLinks.add(siteBuilder.replaceAll("xxxx",i+""));
+			}
+		}
 		for(String link:similarLinks){
 
 			printS("similarLinks: %s", link);
@@ -165,8 +199,16 @@ public class Tab2Controller implements CallBack{
 				if(pic.contains("cover")||pic.endsWith(".js")
 				||StringUtils.isNotBlank(mustInclude) && !pic.contains(mustInclude)
 				||(!StringUtils.isEmpty(width) && Integer.parseInt(width)<300)
+				||pic.contains("count.php")
 				) continue;
 					picList.add(pic);
+			}
+			Elements links = doc3.select("a[href]");
+			for (Element linkPic : links) {
+				String lin = linkPic.attr("abs:href");
+				if(lin.toLowerCase().contains("jpg")){
+					picList.add(lin);
+				}
 			}
 		}
 		for(String pic:picList){
@@ -177,46 +219,8 @@ public class Tab2Controller implements CallBack{
 	}
 
 
-	private int DeviantArtSelected(String keyw)throws IOException{
-		site = "http://www.deviantart.com/browse/all/?section=&global=1&q=";
-		keyw = keyw.replace(' ', '+');
-		site += keyw;
-		System.out.println(site);
-		int i=0, w=0;
-		Document doc3;
-		Elements media;
-		doc2 = Jsoup.connect(site).followRedirects(true).timeout(10000).get();
-		Elements links = doc2.select("a[href]");
-		print("\nLinks: (%d)", links.size());
-		for (Element link : links) {
-	       	 print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
-	       	 if(link.attr("abs:href").contains("deviantart.com/art/"))
-	       	 {
-	       		 wynik1[i] = link.attr("abs:href");
-	       		 System.out.println("o: "+wynik1[i]);
-	       		 doc3 = Jsoup.connect(wynik1[i]).timeout(60*1000).get();
-	       		 media = doc3.select("[src]");
-	       		 for (Element src : media)
-	       		 {
-	       			 print(" * src: <%s>  (%s)", src.attr("abs:src"), trim(src.text(), 35));
-	       			 if(!src.attr("width").equals("")) w = Integer.parseInt(src.attr("width"));
-	       			 else w = 0;
-	       			 if(w > 300 && !(src.attr("abs:src").endsWith(".js")))
-	       			 {
-
-	              	 }
-	       		 }
-	       		 i++;
-	       	 }
-	       	if(i>=n)break;
-		}
-
-		return index;
-	}
-
 	private void reset(){
-		wynik1 = null;
-		wynik1 = new String[n];
+
 		wynik2.clear();
 		index = 0;
 
@@ -280,7 +284,7 @@ public class Tab2Controller implements CallBack{
 				GoogleImSelected(keyword,Tab2Controller.this);
 
 				//解决了返回给雇员线程
-				callBack.call();
+				callBack.call(Tab2Controller.this);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -289,11 +293,11 @@ public class Tab2Controller implements CallBack{
 	}
 
 	@Override
-	public void  call(){
+	public void  call(Tab2Controller tab2Controller){
 		print("%s", StringUtils.join(wynik2,"\n"));
 		//txtArea.requestFocus();
 		txtArea.selectAll();
-//		txt3.requestFocus();
+	//	tab2Controller.txt3.requestFocus();
 //		txt3.selectAll();
 		//txt3.setDisable(false);
 	}
@@ -340,7 +344,13 @@ public class Tab2Controller implements CallBack{
 		}
 		for(String picUrl:wynik2){
 			try {
+				String[] prefix = getImageName(picUrl).split("\\.");
+
 				String theDir = txt4.getText()+"\\"+doDomain(picUrl)+"\\"+doMatchPath(picUrl);
+				if(prefix.length>1 &&prefix[1].contains("?")
+						&&prefix[1].contains("jpg")){
+					theDir=theDir+".jpg";
+				}
 				File file =new File(theDir);
 				file.getParentFile().mkdirs();
 				if(file.exists()&& file.length() > 1024){
@@ -362,10 +372,6 @@ public class Tab2Controller implements CallBack{
 		/*alert.close();
         alert.setHeaderText("Done!");
         alert.showAndWait();*/
-        wynik1 = null;
-        wynik1 = new String[n];
-        wynik2.clear();
-        index = 0;
 	}
 	
 	public static void printS(String msg, Object... args) {
