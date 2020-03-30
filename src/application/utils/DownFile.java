@@ -54,7 +54,7 @@ public class DownFile {
                     + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
                     + "Safari/537.36 OPR/30.0.1835.59").timeout(var1).referrer(referrer).followRedirects(false);
         }catch (Exception e){
-            Tab2Controller.printS(e.getMessage());
+            TabUtil.printS(e.getMessage());
         }
         return null;
     }

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import application.service.SystemClipboardMonitor;
 import application.utils.DownFile;
+import application.utils.TabUtil;
 import controller.CallBack;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -27,25 +28,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
-import controller.MainController;
 
 public class Tab2Controller implements CallBack  {
 
 	public static ExecutorService service = Executors.newFixedThreadPool(1);
-	private MainController main;
-
 	@FXML public  TextArea txtArea;
 	@FXML public  TextField txt3;
 	@FXML public  TextField txt4;
 	@FXML public  TextField txt5;
 	@FXML public  TextField txt6;
 	@FXML private  Button btn2save;
-
-	@FXML public void initialize() {
-		instance = this;
-		new SystemClipboardMonitor();
-	}
-
 	private String keyword, site;
 	private static List<String> urls = new ArrayList<>();
 	private int index=0;
@@ -61,6 +53,12 @@ public class Tab2Controller implements CallBack  {
 	BufferedImage image2 = null;
 	private  Document  doc2;
 
+
+	@FXML public void initialize() {
+		instance = this;
+		new SystemClipboardMonitor();
+	}
+
 	private void print(Tab2Controller tab2Controller,String msg, Object... args) {
 		String newText = tab2Controller.txtArea.getText();
 		newText = (StringUtils.isNotBlank(newText)?newText + "\n":"") + String.format(msg, args);
@@ -70,22 +68,6 @@ public class Tab2Controller implements CallBack  {
 	private void print(String msg, Object... args) {
 		this.print(this,msg,args);
 	}
-
-	private Document doGet(String url) {
-		try {
-			return DownFile.doGet(url).get();
-		}catch (SocketTimeoutException e){
-			try {
-				Thread.currentThread().sleep(5000);
-				return doGet(url);
-			}catch (Exception ex){
-				printS(ex.getMessage());
-			}
-		}catch (Exception e){
-			printS(e.getMessage());
-		}
-		return null;
-		}
 
 
 	private void   firstGet(String site){
@@ -100,7 +82,7 @@ public class Tab2Controller implements CallBack  {
 				mustInclude=  site.substring(0,site.lastIndexOf("/")+1)+fileName.replaceAll("[\\d]+","");
 			}
 		}
-		doc2 = doGet(site);
+		doc2 = TabUtil.doGet(site);
 		if(null == doc2) return;
 		Elements links = doc2.select("a[href]");
 		similarLinksPart.add(site);
@@ -123,7 +105,7 @@ public class Tab2Controller implements CallBack  {
 						maxPage = maxPage > imageName ? maxPage : imageName;
 						map.put(imageName, lin);
 					}catch (NumberFormatException e){
-						printS(e.getMessage());
+						TabUtil.printS(e.getMessage());
 					}
 				}
 			}
@@ -165,10 +147,10 @@ public class Tab2Controller implements CallBack  {
 		}
 		for(String link:similarLinks){
 
-			printS("similarLinks: %s", link);
+			TabUtil.printS("similarLinks: %s", link);
 			Document doc3;
 			Elements media;
-			doc3 = doGet(link);
+			doc3 = TabUtil.doGet(link);
 			media = doc3.select("[src]");
 			for (Element src : media)
 			{
@@ -176,7 +158,8 @@ public class Tab2Controller implements CallBack  {
 				String pic = src.attr("abs:src");
 				if(pic.contains("cover")||pic.endsWith(".js")
 				||StringUtils.isNotBlank(mustInclude) && !pic.contains(mustInclude)
-				||(!StringUtils.isEmpty(width) && Integer.parseInt(width)<300)
+				||(!StringUtils.isEmpty(width) && width.toLowerCase().contains("px") &&
+						Integer.parseInt(width.replaceAll("[\\D]+", ""))<300)
 				||pic.contains("count.php")
 				) continue;
 					picList.add(pic);
@@ -300,20 +283,6 @@ public class Tab2Controller implements CallBack  {
         
     }
 
-    private String doMatchPath(String fileName) {
-		Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
-		Matcher matcher = pattern.matcher(fileName);
-        fileName = matcher.replaceAll(""); // 将匹配到的非法字符以空替换
-		return fileName;
-	}
-
-	private String doDomain(String fileName) {
-
-		String reg = ".*\\/\\/([^\\/\\:]*).*";
-		String domain = fileName.replaceAll (reg, "$1");
-
-		return domain;
-	}
 	@FXML private void btn2saveClicked(ActionEvent event) {
 		System.out.println("Btn 2 save clicked");
 		int threadCount = 3;
@@ -325,7 +294,7 @@ public class Tab2Controller implements CallBack  {
 			try {
 				String[] prefix = getImageName(picUrl).split("\\.");
 
-				String theDir = txt4.getText()+"\\"+doDomain(picUrl)+"\\"+doMatchPath(picUrl);
+				String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
 				if(prefix.length>1 &&prefix[1].contains("?")
 						&&prefix[1].contains("jpg")){
 					theDir=theDir+".jpg";
@@ -355,19 +324,5 @@ public class Tab2Controller implements CallBack  {
         alert.showAndWait();*/
 	}
 	
-	public static void printS(String msg, Object... args) {
-		System.out.println(String.format(msg, args));
-		//System.out.println(newText);
-    }
 
-    private static String trim(String s, int width) {
-        if (s.length() > width)
-            return s.substring(0, width-1) + ".";
-        else
-            return s;
-    }
-	
-	public void init(MainController mainController) {
-		main = mainController;
-	}
 }

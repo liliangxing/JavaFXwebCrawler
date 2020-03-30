@@ -5,6 +5,7 @@ package application.service;
  * @Date: 2020/3/28 10:34
  * @Description:
  */
+import application.utils.TabUtil;
 import controller.tab.Tab2Controller;
 
 import java.awt.Toolkit;
@@ -64,7 +65,7 @@ public class SystemClipboardMonitor implements FlavorListener {
             ex.printStackTrace();
         }
 
-        Tab2Controller.printS("flavorsChanged触发：%s",text);
+        TabUtil.printS("flavorsChanged触发：%s",text);
 
         if(!(!text.endsWith("\n")&& text.contains("\n")) && text.startsWith("http")) {
             Tab2Controller.instance.txt3.setText(text);
