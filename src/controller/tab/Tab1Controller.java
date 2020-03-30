@@ -22,12 +22,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import controller.MainController;
 
 public class Tab1Controller {
 
-	private MainController main;
-	
 	@FXML private Label lbl1 = new Label();
 	@FXML private TextField txt1;
 	@FXML private Button btn1Search;
@@ -302,9 +299,5 @@ public class Tab1Controller {
         alert.setHeight(100);
         alert.showAndWait();*/
     }
-	
-	public void init(MainController mainController) {
-		main = mainController;
-	}
 
 }
