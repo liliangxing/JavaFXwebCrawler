@@ -225,7 +225,7 @@ public class Tab2Controller implements CallBack  {
 		txt3.requestFocus();
 		txt3.selectAll();
 		System.out.println("Btn 2 search clicked");
-		//txt3.setDisable(true);
+		txt3.setDisable(true);
 		reset();
 		/*new Thread(new Runnable() {
 			@Override
@@ -274,6 +274,7 @@ public class Tab2Controller implements CallBack  {
 	public void  call(Tab2Controller tab2Controller){
 		print("%s", StringUtils.join(wynik2,"\n"));
 		//txtArea.requestFocus();
+        txt3.setDisable(false);
 		txtArea.selectAll();
 	//	tab2Controller.txt3.requestFocus();
 //		txt3.selectAll();
