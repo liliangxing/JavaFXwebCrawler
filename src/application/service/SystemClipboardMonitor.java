@@ -40,7 +40,6 @@ public class SystemClipboardMonitor implements FlavorListener {
     public void flavorsChanged(FlavorEvent flavorEvent) {
         // 如果不暂停一下，经常会抛出IllegalStateException
         // 猜测是操作系统正在使用系统剪切板，故暂时无法访问
-        Tab2Controller.printS("-------------");
         try {
             Thread.currentThread().sleep(1);
         } catch (InterruptedException e) {
