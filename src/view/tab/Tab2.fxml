@@ -17,7 +17,7 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <TextField fx:id="txt3" layoutX="24.0" layoutY="16.0" prefHeight="22.0" prefWidth="377.0" promptText="Keyword">https://www.ku66.net/r/5/92.html</TextField>
+                  <TextField fx:id="txt3" layoutX="24.0" layoutY="16.0" prefHeight="22.0" prefWidth="377.0" promptText="Keyword"></TextField>
                   <TextField fx:id="txt5" layoutX="469.0" layoutY="15.0" prefHeight="22.0" prefWidth="250.0" promptText="图片必须包含" />
                   <Button fx:id="btn2search" layoutX="332.0" layoutY="62.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2searchClicked" prefHeight="35.0" prefWidth="70.0" text="Search" />
 

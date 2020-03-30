@@ -32,6 +32,7 @@ public class DownFile {
     private int size;// 每个线程下载文件的长度
     private int fileLength;// 文件总程度
     private String pathName;// 下载的文件路径（包含文件名）
+    private final static String referrer = "http://www.baidu.com";
     private Downthread[] tDownthreads;// 线程数组
 
     public DownFile(URL url, int threadCount, String pathName) throws IOException {
@@ -51,7 +52,7 @@ public class DownFile {
         try {
             return Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) "
                     + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
-                    + "Safari/537.36 OPR/30.0.1835.59").timeout(var1).referrer("http://www.baidu.com").followRedirects(false);
+                    + "Safari/537.36 OPR/30.0.1835.59").timeout(var1).referrer(referrer).followRedirects(false);
         }catch (Exception e){
             Tab2Controller.printS(e.getMessage());
         }
