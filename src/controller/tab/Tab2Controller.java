@@ -1,6 +1,5 @@
 package controller.tab;
 
-import java.awt.datatransfer.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import application.utils.ClipboardUtil;
+import application.service.SystemClipboardMonitor;
 import application.utils.DownFile;
 import controller.CallBack;
 import javafx.scene.control.Button;
@@ -30,7 +29,7 @@ import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
 import controller.MainController;
 
-public class Tab2Controller implements CallBack, FlavorListener  {
+public class Tab2Controller implements CallBack  {
 
 	public static ExecutorService service = Executors.newFixedThreadPool(1);
 	private MainController main;
@@ -42,38 +41,11 @@ public class Tab2Controller implements CallBack, FlavorListener  {
 	@FXML public  TextField txt6;
 	@FXML private  Button btn2save;
 
-	public Clipboard systemClipboard = null ;
-
-	public void flavorsChanged(FlavorEvent flavorEvent) {
-
-        // 如果不暂停一下，经常会抛出IllegalStateException
-        // 猜测是操作系统正在使用系统剪切板，故暂时无法访问
-        try {
-            Thread.currentThread().sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-		try {
-
-			doAutoPaste();
-
-		} catch (IllegalStateException ex) {
-			ex.printStackTrace();
-		}
-	}
 	@FXML public void initialize() {
-		systemClipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-		systemClipboard.addFlavorListener(this) ;
+		instance = this;
+		new SystemClipboardMonitor();
 	}
 
-	private  void doAutoPaste(){
-		String text = ClipboardUtil.getSysClipboardText(systemClipboard);
-		if(!(!text.endsWith("\n")&& text.contains("\n")) && text.startsWith("http")) {
-			txt3.setText(text);
-		}else {
-			txt3.setText(text);
-		}
-	}
 	private String keyword, site;
 	private static List<String> urls = new ArrayList<>();
 	private int index=0;

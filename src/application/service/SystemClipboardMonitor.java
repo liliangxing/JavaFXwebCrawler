@@ -6,15 +6,9 @@ package application.service;
  * @Description:
  */
 import controller.tab.Tab2Controller;
-import org.apache.commons.lang3.StringUtils;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 import java.io.IOException;
 
 /**
@@ -23,14 +17,11 @@ import java.io.IOException;
  * 由于监控需要一个对象作为ClipboardOwner，故不能用静态类
  *
  */
-public class SystemClipboardMonitor implements ClipboardOwner{
+public class SystemClipboardMonitor implements FlavorListener {
     private Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
     public SystemClipboardMonitor(){
-        //如果剪贴板中有文本，则将它的ClipboardOwner设为自己
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)){
-            clipboard.setContents(clipboard.getContents(null), this);
-        }
+        clipboard.addFlavorListener(this) ;
     }
 
     /************
@@ -46,40 +37,43 @@ public class SystemClipboardMonitor implements ClipboardOwner{
      * 如果剪贴板的内容改变，则系统自动调用此方法 *
      **********************************************
      */
-    @Override
-    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+    public void flavorsChanged(FlavorEvent flavorEvent) {
         // 如果不暂停一下，经常会抛出IllegalStateException
         // 猜测是操作系统正在使用系统剪切板，故暂时无法访问
+        Tab2Controller.printS("-------------");
         try {
-            Thread.sleep(1);
+            Thread.currentThread().sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // 取出文本并进行一次文本处理
-        String text = null;
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)){
-            try {
-                text = (String)clipboard.getData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        String text = "";
+        try {
+
+            // 取出文本并进行一次文本处理
+            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)){
+                try {
+                    text = (String)clipboard.getData(DataFlavor.stringFlavor);
+                } catch (UnsupportedFlavorException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
         }
 
-        //String clearedText = Text.handle(text); // 自定义的处理方法
-        // 存入剪贴板，并注册自己为所有者
-        // 用以监控下一次剪贴板内容变化
-        StringSelection tmp = new StringSelection(text);
-        clipboard.setContents(tmp, this);
-        if(StringUtils.isNotEmpty(text)) {
-            doAutoPaste(text);
-        }
-    }
+        Tab2Controller.printS("flavorsChanged触发：%s",text);
 
-    private static void doAutoPaste(String text){
         if(!(!text.endsWith("\n")&& text.contains("\n")) && text.startsWith("http")) {
             Tab2Controller.instance.txt3.setText(text);
+        }else {
+            Tab2Controller.instance.txt3.setText(text);
         }
+        //Tab2Controller.instance.txt3.requestFocus();
+        Tab2Controller.instance.txt3.selectAll();
     }
+
 }
