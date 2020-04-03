@@ -138,7 +138,7 @@ public class Tab2Controller implements CallBack  {
 		if(includeCount>1){
 			similarLinks = similarLinksPart;
 		}
-		String reg = "(.*page=)[\\d]+(.*)";
+		String reg = "(.*[page|p]=)[\\d]+(.*)";
 		if(site.matches(reg)){
 			String siteBuilder = site.replaceAll (reg, "$1"+"xxxx"+"$2");
 			for(int i=0;i< 100;i++){
@@ -152,10 +152,10 @@ public class Tab2Controller implements CallBack  {
 			Elements media;
 			doc3 = TabUtil.doGet(link);
 			media = doc3.select("[src]");
-			for (Element src : media)
+			for (Element img : media)
 			{
-				String width = src.attr("width");
-				String pic = src.attr("abs:src");
+				String width = img.attr("width");
+				String pic = img.attr("abs:src");
 				if(pic.contains("cover")||pic.endsWith(".js")
 				||StringUtils.isNotBlank(mustInclude) && !pic.contains(mustInclude)
 				||(!StringUtils.isEmpty(width) && width.toLowerCase().contains("px") &&

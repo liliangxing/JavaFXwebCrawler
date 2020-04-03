@@ -54,7 +54,8 @@ import javax.net.ssl.X509TrustManager;
 public class InstallCert {
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"pic.ku66.net"};
+        args = (args == null || args.length==0)?
+                new String[]{"pic.ku66.net"}:args;
 
         String host;
         int port;
@@ -71,18 +72,18 @@ public class InstallCert {
             return;
         }
 
-        File file = new File("jssecacerts");
-        if (file.isFile() == false) {
+
             char SEP = File.separatorChar;
             File dir = new File(System.getProperty("java.home") + SEP + "lib"
                     + SEP + "security");
-            file = new File(dir, "jssecacerts");
-            if (file.isFile() == false) {
-                file = new File(dir, "cacerts");
-            }
-        }
+            File file = new File(dir, "jssecacerts");
         System.out.println("Loading KeyStore " + file + "...");
-        InputStream in = new FileInputStream(file);
+
+        File file1 = new File(dir, "jssecacerts");
+        if (file1.isFile() == false) {
+            file1 = new File(dir, "cacerts");
+        }
+        InputStream in = new FileInputStream(file1);
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(in, passphrase);
         in.close();
@@ -140,20 +141,13 @@ public class InstallCert {
 
         System.out
                 .println("Enter certificate to add to trusted keystore or 'q' to quit: [1]");
-        String line = reader.readLine().trim();
-        int k;
-        try {
-            k = (line.length() == 0) ? 0 : Integer.parseInt(line) - 1;
-        } catch (NumberFormatException e) {
-            System.out.println("KeyStore not changed");
-            return;
-        }
 
+        int k= 0;
         X509Certificate cert = chain[k];
         String alias = host + "-" + (k + 1);
         ks.setCertificateEntry(alias, cert);
 
-        OutputStream out = new FileOutputStream("jssecacerts");
+        OutputStream out = new FileOutputStream(file);
         ks.store(out, passphrase);
         out.close();
 

@@ -1,7 +1,9 @@
 package application.utils;
 
+import controller.InstallCert;
 import org.jsoup.nodes.Document;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.net.SocketTimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +42,13 @@ public class TabUtil {
                 return doGet(url);
             }catch (Exception ex){
                 TabUtil.printS(ex.getMessage());
+            }
+        }catch (SSLHandshakeException e){
+           //下载证书
+            try {
+                InstallCert.main(new String[]{doDomain(url)});
+            }catch (Exception e1){
+                TabUtil.printS(e1.getMessage());
             }
         }catch (Exception e){
             TabUtil.printS(e.getMessage());
