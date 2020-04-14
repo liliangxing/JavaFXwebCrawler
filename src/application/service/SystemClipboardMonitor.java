@@ -69,8 +69,6 @@ public class SystemClipboardMonitor implements FlavorListener {
 
         if(!(!text.endsWith("\n")&& text.contains("\n")) && text.startsWith("http")) {
             Tab2Controller.instance.txt3.setText(text);
-        }else {
-            Tab2Controller.instance.txt3.setText(text);
         }
         //Tab2Controller.instance.txt3.requestFocus();
         Tab2Controller.instance.txt3.selectAll();

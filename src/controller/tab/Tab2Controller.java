@@ -47,7 +47,7 @@ public class Tab2Controller implements CallBack  {
 	private int includeCount = 0 ;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
-	private Map<Integer,String> map = new HashMap<>();
+	private Map<Integer,String> mapLinks = new HashMap<>();
 	public static Tab2Controller instance ;
 
 	BufferedImage image2 = null;
@@ -99,11 +99,17 @@ public class Tab2Controller implements CallBack  {
 				}
 				if(lin.substring(lin.lastIndexOf("/") + 1).contains(".")) {
 					try {
-						String mylin =lin.substring(lin.lastIndexOf("/") + 1, lin.lastIndexOf("."))
-								.replaceAll("[\\D]+", "");
-						int imageName = StringUtils.isEmpty(mylin)?0:Integer.parseInt(mylin);
+						String[] mylinArr =lin.substring(lin.lastIndexOf("/") + 1, lin.lastIndexOf(".")).split("_");
+						String myLin;
+						if(mylinArr.length>1){
+							myLin = mylinArr[1];
+						}else {
+							myLin =  mylinArr[0];
+						}
+						myLin.replaceAll("[\\D]+", "");
+						int imageName = StringUtils.isEmpty(myLin)?0:Integer.parseInt(myLin);
 						maxPage = maxPage > imageName ? maxPage : imageName;
-						map.put(imageName, lin);
+						mapLinks.put(imageName, lin);
 					}catch (NumberFormatException e){
 						TabUtil.printS(e.getMessage());
 					}
@@ -118,12 +124,38 @@ public class Tab2Controller implements CallBack  {
 
 	private boolean doFirstGet(){
 		int tempPage = maxPage;
-		firstGet(map.get(maxPage));
+		firstGet(mapLinks.get(maxPage));
 		if(maxPage> tempPage){
-			firstGet(map.get(maxPage));
+			firstGet(mapLinks.get(maxPage));
+			//继续
 			return true;
+		}else {
+			int tempMax = doRemove();
+			if(tempMax > 0) {
+				firstGet(mapLinks.get(tempMax));
+				//继续
+				return true;
+			}
 		}
+		//终止循环
 		return false;
+	}
+
+	private int doRemove(){
+		mapLinks.remove(maxPage);
+		if(mapLinks.isEmpty()){
+			return 0;
+		}
+		Set<Integer> set = mapLinks.keySet();
+		Object[] obj = set.toArray();
+		Arrays.sort(obj);
+		int tempMax = (int)obj[obj.length - 1];
+		if(maxPage-tempMax == 1 || maxPage-tempMax>100){
+			maxPage = tempMax;
+			return doRemove();
+		}else {
+			return tempMax;
+		}
 	}
 
 	private int GoogleImSelected(String site,Tab2Controller tab2Controller){
@@ -189,7 +221,7 @@ public class Tab2Controller implements CallBack  {
 		includeCount = 0;
 		similarLinksPart.clear();
 		similarLinks.clear();
-		map.clear();
+		mapLinks.clear();
 		txtArea.clear();
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
