@@ -44,6 +44,8 @@ public class Tab2Controller implements CallBack  {
     private List<String> wynik2 = new ArrayList<>(100);
 
 	private int maxPage = 0;
+	private int finalMaxPage = 0;
+	private String finalUrl;
 	private int includeCount = 0 ;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
@@ -106,9 +108,12 @@ public class Tab2Controller implements CallBack  {
 						}else {
 							myLin =  mylinArr[0];
 						}
-						myLin.replaceAll("[\\D]+", "");
+						myLin =myLin.replaceAll("[\\D]+", "");
 						int imageName = StringUtils.isEmpty(myLin)?0:Integer.parseInt(myLin);
-						maxPage = maxPage > imageName ? maxPage : imageName;
+						if(imageName<200) {
+							maxPage = maxPage > imageName ? maxPage : imageName;
+							finalMaxPage = finalMaxPage > maxPage ? finalMaxPage : maxPage;
+						}
 						mapLinks.put(imageName, lin);
 					}catch (NumberFormatException e){
 						TabUtil.printS(e.getMessage());
@@ -116,6 +121,8 @@ public class Tab2Controller implements CallBack  {
 				}
 			}
 		}
+
+		finalUrl = mapLinks.get(finalMaxPage);
 	}
 
 	private String getImageName(String url){
@@ -131,10 +138,18 @@ public class Tab2Controller implements CallBack  {
 			return true;
 		}else {
 			int tempMax = doRemove();
-			if(tempMax > 0) {
+			if(tempMax > 0 && tempMax< 200 ) {
 				firstGet(mapLinks.get(tempMax));
 				//继续
 				return true;
+			}else {
+				tempPage = finalMaxPage;
+				firstGet(finalUrl);
+				if(finalMaxPage> tempPage){
+					firstGet(mapLinks.get(finalUrl));
+					//继续
+					return true;
+				}
 			}
 		}
 		//终止循环
