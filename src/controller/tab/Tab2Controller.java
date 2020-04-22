@@ -98,7 +98,7 @@ public class Tab2Controller implements CallBack  {
 			if(lin.startsWith(mustInclude) && !lin.endsWith("#")){
 				similarLinks.add(lin);
 				if(lin.startsWith(site.substring(0,site.lastIndexOf(".")))
-				&& !fileName.matches(".*[a-zA-z]+[\\d]+.*")){
+				&& site.equals(keyword) && !fileName.matches(".*[a-zA-z]+[\\d]+.*")){
 					similarLinksPart.add(lin);
 					includeCount++;
 				}
@@ -184,8 +184,8 @@ public class Tab2Controller implements CallBack  {
 
 		String mustInclude = txt5.getText();
 		Set<String> picList  = new TreeSet<>();
-		if(includeCount>1 && similarLinks.size()> similarLinksPart.size()+1){
-			similarLinks = similarLinksPart;
+		if(includeCount>1){
+			//similarLinks = similarLinksPart;
 		}
 		String reg = "(.*[page|p]=)[\\d]+(.*)";
 		if(site.matches(reg)){
