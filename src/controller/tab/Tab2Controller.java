@@ -73,7 +73,7 @@ public class Tab2Controller implements CallBack  {
 	}
 
 
-	private void   firstGet(String site){
+	private void  firstGet(String site){
 		if(null==site) return;
 		String mustInclude = site.substring(0,site.lastIndexOf("/") );
 		String fileName = getImageName(site).split("\\.")[0];
@@ -184,7 +184,7 @@ public class Tab2Controller implements CallBack  {
 
 		String mustInclude = txt5.getText();
 		Set<String> picList  = new TreeSet<>();
-		if(includeCount>1){
+		if(includeCount>1 && similarLinks.size()> similarLinksPart.size()+1){
 			similarLinks = similarLinksPart;
 		}
 		String reg = "(.*[page|p]=)[\\d]+(.*)";
