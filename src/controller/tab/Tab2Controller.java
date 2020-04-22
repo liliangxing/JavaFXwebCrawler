@@ -21,8 +21,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.TextUtils;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import javafx.event.ActionEvent;
@@ -45,8 +47,6 @@ public class Tab2Controller implements CallBack  {
     private List<String> wynik2 = new ArrayList<>(100);
 
 	private int maxPage = 0;
-	private int finalMaxPage = 0;
-	private String finalUrl;
 	private int includeCount = 0 ;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
@@ -91,6 +91,7 @@ public class Tab2Controller implements CallBack  {
 		Elements links = doc2.select("a[href]");
 		similarLinksPart.add(site);
 		similarLinks.add(site);
+		links.add(new Element(Tag.valueOf("a"),site, new Attributes().put("href",site)));
 		for (Element link : links)
 		{
 			String lin = link.attr("abs:href");
@@ -114,7 +115,6 @@ public class Tab2Controller implements CallBack  {
 						int imageName = StringUtils.isEmpty(myLin)?0:Integer.parseInt(myLin);
 						if(imageName<200) {
 							maxPage = maxPage > imageName ? maxPage : imageName;
-							finalMaxPage = finalMaxPage > maxPage ? finalMaxPage : maxPage;
 						}
 						pageLinks.put(imageName, lin);
 					}catch (NumberFormatException e){
@@ -124,7 +124,6 @@ public class Tab2Controller implements CallBack  {
 			}
 		}
 
-		finalUrl = pageLinks.get(finalMaxPage);
 	}
 
 	private String getImageName(String url){
@@ -145,10 +144,10 @@ public class Tab2Controller implements CallBack  {
 				//继续
 				return true;
 			}else {
-				tempPage = finalMaxPage;
-				firstGet(finalUrl);
-				if(finalMaxPage> tempPage){
-					firstGet(pageLinks.get(finalUrl));
+				tempPage = maxPage;
+				firstGet(pageLinks.get(maxPage));
+				if(maxPage> tempPage){
+					firstGet(pageLinks.get(maxPage));
 					//继续
 					return true;
 				}
@@ -176,6 +175,7 @@ public class Tab2Controller implements CallBack  {
 	}
 
 	private int GoogleImSelected(String site,Tab2Controller tab2Controller){
+		site = site.replaceAll("(.*_)[\\d]+.html","$1"+"2.html");
 		firstGet(site);
 
 		while(doFirstGet()) {
