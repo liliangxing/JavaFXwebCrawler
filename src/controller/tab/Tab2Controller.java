@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.TextUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -49,7 +50,7 @@ public class Tab2Controller implements CallBack  {
 	private int includeCount = 0 ;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
-	private Map<Integer,String> mapLinks = new HashMap<>();
+	private Map<Integer,String> pageLinks = new HashMap<>();
 	public static Tab2Controller instance ;
 
 	BufferedImage image2 = null;
@@ -79,6 +80,7 @@ public class Tab2Controller implements CallBack  {
 		if(fileName.contains("_")){
 			mustInclude = site.split("_")[0];
 		}else if(fileName.length()>2){
+			if(site.lastIndexOf(".") < 0) return;
 			mustInclude = site.substring(0,site.lastIndexOf(".") );
 			if( fileName.matches(".*[a-zA-z]+[\\d]+.*")){
 				mustInclude=  site.substring(0,site.lastIndexOf("/")+1)+fileName.replaceAll("[\\d]+","");
@@ -114,7 +116,7 @@ public class Tab2Controller implements CallBack  {
 							maxPage = maxPage > imageName ? maxPage : imageName;
 							finalMaxPage = finalMaxPage > maxPage ? finalMaxPage : maxPage;
 						}
-						mapLinks.put(imageName, lin);
+						pageLinks.put(imageName, lin);
 					}catch (NumberFormatException e){
 						TabUtil.printS(e.getMessage());
 					}
@@ -122,7 +124,7 @@ public class Tab2Controller implements CallBack  {
 			}
 		}
 
-		finalUrl = mapLinks.get(finalMaxPage);
+		finalUrl = pageLinks.get(finalMaxPage);
 	}
 
 	private String getImageName(String url){
@@ -131,22 +133,22 @@ public class Tab2Controller implements CallBack  {
 
 	private boolean doFirstGet(){
 		int tempPage = maxPage;
-		firstGet(mapLinks.get(maxPage));
+		firstGet(pageLinks.get(maxPage));
 		if(maxPage> tempPage){
-			firstGet(mapLinks.get(maxPage));
+			firstGet(pageLinks.get(maxPage));
 			//继续
 			return true;
 		}else {
 			int tempMax = doRemove();
-			if(tempMax > 0 && tempMax< 200 ) {
-				firstGet(mapLinks.get(tempMax));
+			if(tempMax > 0 ) {
+				firstGet(pageLinks.get(tempMax));
 				//继续
 				return true;
 			}else {
 				tempPage = finalMaxPage;
 				firstGet(finalUrl);
 				if(finalMaxPage> tempPage){
-					firstGet(mapLinks.get(finalUrl));
+					firstGet(pageLinks.get(finalUrl));
 					//继续
 					return true;
 				}
@@ -157,15 +159,15 @@ public class Tab2Controller implements CallBack  {
 	}
 
 	private int doRemove(){
-		mapLinks.remove(maxPage);
-		if(mapLinks.isEmpty()){
+		pageLinks.remove(maxPage);
+		if(pageLinks.isEmpty()){
 			return 0;
 		}
-		Set<Integer> set = mapLinks.keySet();
+		Set<Integer> set = pageLinks.keySet();
 		Object[] obj = set.toArray();
 		Arrays.sort(obj);
 		int tempMax = (int)obj[obj.length - 1];
-		if(maxPage-tempMax == 1 || maxPage-tempMax>100){
+		if(maxPage-tempMax == 1 || Math.abs(maxPage-tempMax)>100){
 			maxPage = tempMax;
 			return doRemove();
 		}else {
@@ -236,7 +238,7 @@ public class Tab2Controller implements CallBack  {
 		includeCount = 0;
 		similarLinksPart.clear();
 		similarLinks.clear();
-		mapLinks.clear();
+		pageLinks.clear();
 		txtArea.clear();
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
@@ -337,7 +339,13 @@ public class Tab2Controller implements CallBack  {
 		if(StringUtils.isNotBlank(threadCountStr)){
 			threadCount = Integer.parseInt(threadCountStr);
 		}
-		for(String picUrl:wynik2){
+		String text =txtArea.getText();
+		if(TextUtils.isBlank(text)) return;
+		if(!TextUtils.isBlank(keyword)) {
+			DownFile.referrer = keyword;
+		}
+		for(String picUrl:text.split("\n")){
+			if(TextUtils.isBlank(picUrl)) continue;
 			try {
 				String[] prefix = getImageName(picUrl).split("\\.");
 
