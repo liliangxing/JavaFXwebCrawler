@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import application.service.SystemClipboardMonitor;
+import application.utils.ClipboardUtil;
 import application.utils.DownFile;
 import application.utils.TabUtil;
 import controller.CallBack;
@@ -246,6 +247,14 @@ public class Tab2Controller implements CallBack  {
 		if(StringUtils.isEmpty(txt5.getText())) {
 			if (urls.contains(keyword) || StringUtils.isEmpty(keyword)) {
 				//已经点击过
+				if(StringUtils.isEmpty(txt3.getText())){
+					//获取剪贴板
+					if(txt3.isDisable()){
+						txt3.setDisable(false);
+					}
+					txt3.setText(ClipboardUtil.getSysClipboardText());
+					return;
+				}
 				txt3.setText("");
 				txt3.requestFocus();
 				return;
