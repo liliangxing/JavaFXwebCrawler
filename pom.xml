@@ -20,7 +20,7 @@
 		<mybatis.version>3.5.1</mybatis.version>
 		<mybatis-spring.version>2.0.1</mybatis-spring.version>
 		<aspectj.version>1.8.4</aspectj.version>
-		<jackson.version>2.9.9</jackson.version>
+		<jackson.version>2.11.0</jackson.version>
 		<maven.encoding>UTF-8</maven.encoding>
 		
 		<deploy.target.dir>D:/99.tmp/spring_batch</deploy.target.dir>
