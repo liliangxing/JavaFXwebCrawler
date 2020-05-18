@@ -19,10 +19,16 @@ public class TabUtil {
         //System.out.println(newText);
     }
 
-    public static String doMatchPath(String fileName) {
+    public static String doMatchPath(String fileName2) {
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
-        Matcher matcher = pattern.matcher(fileName);
-        fileName = matcher.replaceAll(""); // 将匹配到的非法字符以空替换
+        Matcher matcher = pattern.matcher(fileName2);
+        String fileName = matcher.replaceAll(""); // 将匹配到的非法字符以空替换
+        if(fileName.contains("weishi")){
+            Matcher m = Pattern.compile(".*\\/(.*\\.mp4).*").matcher(fileName2);
+            if(m.find()){
+                fileName = m.group(1);
+            }
+        }
         return fileName;
     }
 
