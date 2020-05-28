@@ -244,24 +244,22 @@ public class Tab2Controller implements CallBack  {
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
 		keyword = txt3.getText();
-		if(StringUtils.isEmpty(txt5.getText())) {
-			if (urls.contains(keyword) || StringUtils.isEmpty(keyword)) {
-				//已经点击过
-				if(StringUtils.isEmpty(txt3.getText())){
-					//获取剪贴板
-					if(txt3.isDisable()){
-						txt3.setDisable(false);
-					}
-					txt3.setText(ClipboardUtil.getSysClipboardText());
-					return;
+		if (urls.contains(keyword) || StringUtils.isEmpty(keyword)) {
+			//已经点击过
+			if(StringUtils.isEmpty(txt3.getText())){
+				//获取剪贴板
+				if(txt3.isDisable()){
+					txt3.setDisable(false);
 				}
-				txt3.setText("");
-				txt3.requestFocus();
+				txt3.setText(ClipboardUtil.getSysClipboardText());
 				return;
-			} else {
-				urls.add(keyword);
-
 			}
+			txt3.setText("");
+			txt3.requestFocus();
+			return;
+		} else {
+			urls.add(keyword);
+
 		}
 		txt3.requestFocus();
 		txt3.selectAll();
