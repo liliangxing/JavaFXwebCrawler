@@ -61,7 +61,7 @@ public class DownFile {
         conn.setRequestProperty("connection", "keep-alive");
          conn.setRequestProperty("User-Agent", userAgent);
         conn.connect();*/
-        fileLength =doGet(fileUrl.toString()).ignoreContentType(true).referrer(referrer).execute().bodyAsBytes().length;
+        fileLength =doGet(fileUrl.toString()).execute().bodyAsBytes().length;
         //fileLength = conn.getContentLength();
 
         System.out.println("文件长度" + fileLength);
@@ -123,7 +123,7 @@ public class DownFile {
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) "
                         + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
                         + "Safari/537.36 OPR/30.0.1835.59");*/
-                Connection connection =doGet(fileUrl.toString()).referrer(referrer).ignoreContentType(true);
+                Connection connection =doGet(fileUrl.toString());
                  is = connection.execute().bodyStream();
                 if(threadCount > 1) {
                     is.skip(startPos);
