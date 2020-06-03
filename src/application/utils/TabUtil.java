@@ -29,6 +29,10 @@ public class TabUtil {
                 fileName = m.group(1);
             }
         }
+        Matcher m =Pattern.compile("video_id=([\\w-][^&]+)").matcher(fileName2);
+        if(m.find()){
+            fileName = m.group(1)+".mp4";
+        }
         return fileName;
     }
 

@@ -28,6 +28,7 @@ public class DownFile {
     private int fileLength;// 文件总程度
     private String pathName;// 下载的文件路径（包含文件名）
     public  static String referrer = "http://www.baidu.com";
+    private  static String userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
     private Downthread[] tDownthreads;// 线程数组
 
     public DownFile(URL url, int threadCount, String pathName) throws IOException {
@@ -45,9 +46,7 @@ public class DownFile {
 
     public static Connection doGet(String url,int var1) {
         try {
-            return Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) "
-                    + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
-                    + "Safari/537.36 OPR/30.0.1835.59").timeout(var1).ignoreContentType(true).followRedirects(false);
+            return Jsoup.connect(url).userAgent(userAgent).timeout(var1).ignoreContentType(true).referrer(referrer).followRedirects(true);
         }catch (Exception e){
             TabUtil.printS(e.getMessage());
         }
@@ -55,14 +54,15 @@ public class DownFile {
     }
     private void init() throws IOException {
         tDownthreads = new Downthread[threadCount];
-        //Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888));
-        HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
-        connection.setConnectTimeout(30000);
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Referer", referrer);
-        connection.connect();
-        //fileLength =doGet(fileUrl.toString()).ignoreContentType(true).execute().bodyAsBytes().length;
-        fileLength = connection.getContentLength();
+
+        /*HttpURLConnection conn = (HttpURLConnection) fileUrl.openConnection();
+        conn.setConnectTimeout(30000);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("connection", "keep-alive");
+         conn.setRequestProperty("User-Agent", userAgent);
+        conn.connect();*/
+        fileLength =doGet(fileUrl.toString()).ignoreContentType(true).referrer(referrer).execute().bodyAsBytes().length;
+        //fileLength = conn.getContentLength();
 
         System.out.println("文件长度" + fileLength);
         size = fileLength / threadCount;
@@ -117,24 +117,30 @@ public class DownFile {
         @Override
         public void run() {
             try {
-                //Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888));
-                HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
+               /* HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
                 connection.setRequestMethod("GET");
-                /*connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) "
+                connection.setRequestProperty("connection", "keep-alive");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) "
                         + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
                         + "Safari/537.36 OPR/30.0.1835.59");*/
-                connection.setRequestProperty("Referer", referrer);
-                connection.setConnectTimeout(5 * 1000);
-                is = connection.getInputStream();
-                is.skip(startPos);
-                raFile.seek(startPos);
-                byte[] buf = new byte[8 * 1024];
-                int hasread = 0;// 读出的字节数
-                // 将位置在 startPos - startPos 位置的数据读出写入
-                while (length < size && (hasread = is.read(buf)) != -1) {
-                    raFile.write(buf, 0, hasread);
-                    length += hasread;
-                    System.out.println("*****线程" + flag + "下载了*********" + length);
+                Connection connection =doGet(fileUrl.toString()).referrer(referrer).ignoreContentType(true);
+                 is = connection.execute().bodyStream();
+                if(threadCount > 1) {
+                    is.skip(startPos);
+                    raFile.seek(startPos);
+                    byte[] buf = new byte[8 * 1024];
+                    int hasread = 0;// 读出的字节数
+                    // 将位置在 startPos - startPos 位置的数据读出写入
+                    while (length < size && (hasread = is.read(buf)) != -1) {
+                        raFile.write(buf, 0, hasread);
+                        length += hasread;
+                        System.out.println("*****线程" + flag + "下载了*********" + length);
+                    }
+                }else {
+                    // 将位置在 startPos - startPos 位置的数据读出写入
+                    for (int b; (b = is.read()) != -1;) {
+                        raFile.write(b);
+                    }
                 }
                 System.out.println("*******线程" + flag + "下载完成*********");
 

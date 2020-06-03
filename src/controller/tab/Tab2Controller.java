@@ -22,6 +22,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.TextUtils;
+import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -353,14 +354,15 @@ public class Tab2Controller implements CallBack  {
 		}
 		for(String picUrl:text.split("\n")){
 			if(TextUtils.isBlank(picUrl)) continue;
-			try {
-				String[] prefix = getImageName(picUrl).split("\\.");
 
-				String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
-				if(prefix.length>1 &&prefix[1].contains("?")
-						&&prefix[1].contains("jpg")){
-					theDir=theDir+".jpg";
-				}
+			String[] prefix = getImageName(picUrl).split("\\.");
+
+			String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
+			if(prefix.length>1 &&prefix[1].contains("?")
+					&&prefix[1].contains("jpg")){
+				theDir=theDir+".jpg";
+			}
+			try {
 				File file =new File(theDir);
 				file.getParentFile().mkdirs();
 				if(file.exists()&& file.length() > 1024){
@@ -374,6 +376,14 @@ public class Tab2Controller implements CallBack  {
 				new DownFile(url,threadCount,theDir).startDown();
         		/*image2 = ImageIO.read(url);
     			ImageIO.write(image2, imgFormat, new File(theDir));*/
+			}catch(HttpStatusException e) {
+				System.out.println(e.getUrl());
+				try {
+					DownFile.referrer = picUrl;
+					new DownFile(new URL(e.getUrl()), 1, theDir).startDown();
+				}catch(Exception err) {
+					System.out.println(err.toString());
+				}
 			}catch(IOException e) {
 				System.out.println(e.toString());
 			}
