@@ -54,20 +54,23 @@ public class DownFile {
     }
     private void init() throws IOException {
         tDownthreads = new Downthread[threadCount];
-
-        /*HttpURLConnection conn = (HttpURLConnection) fileUrl.openConnection();
-        conn.setConnectTimeout(30000);
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("connection", "keep-alive");
-         conn.setRequestProperty("User-Agent", userAgent);
-        conn.connect();*/
-        fileLength =doGet(fileUrl.toString()).execute().bodyAsBytes().length;
+        Connection.Response response = doGet(fileUrl.toString()).execute();
+        if(fileUrl.toString().contains("aweme.snssdk.com")) {
+            threadCount = 1;
+        }
+        fileLength =response.bodyAsBytes().length;
         //fileLength = conn.getContentLength();
 
         System.out.println("文件长度" + fileLength);
         size = fileLength / threadCount;
         System.out.println("每个下载量==" + size);
 
+        /*HttpURLConnection conn = (HttpURLConnection) fileUrl.openConnection();
+        conn.setConnectTimeout(30000);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("connection", "keep-alive");
+        conn.setRequestProperty("User-Agent", userAgent);
+        conn.connect();*/
     }
 
     public URL getFileUrl() {
@@ -125,7 +128,12 @@ public class DownFile {
                         + "Safari/537.36 OPR/30.0.1835.59");*/
                 Connection connection =doGet(fileUrl.toString());
                  is = connection.execute().bodyStream();
-                if(threadCount > 1) {
+                if(threadCount < 2) {
+                    // 将位置在 startPos - startPos 位置的数据读出写入
+                    for (int b; (b = is.read()) != -1;) {
+                        raFile.write(b);
+                    }
+                }else {
                     is.skip(startPos);
                     raFile.seek(startPos);
                     byte[] buf = new byte[8 * 1024];
@@ -135,11 +143,6 @@ public class DownFile {
                         raFile.write(buf, 0, hasread);
                         length += hasread;
                         System.out.println("*****线程" + flag + "下载了*********" + length);
-                    }
-                }else {
-                    // 将位置在 startPos - startPos 位置的数据读出写入
-                    for (int b; (b = is.read()) != -1;) {
-                        raFile.write(b);
                     }
                 }
                 System.out.println("*******线程" + flag + "下载完成*********");
