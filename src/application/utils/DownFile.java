@@ -28,7 +28,10 @@ public class DownFile {
     private int fileLength;// 文件总程度
     private String pathName;// 下载的文件路径（包含文件名）
     public  static String referrer = "http://www.baidu.com";
-    private  static String userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
+    private final static String userAgentPC = "Mozilla/5.0 (Windows NT 6.3; WOW64) "
+            + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
+            + "Safari/537.36 OPR/30.0.1835.59";
+    private  static String userAgentMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
     private Downthread[] tDownthreads;// 线程数组
 
     public DownFile(URL url, int threadCount, String pathName) throws IOException {
@@ -41,10 +44,13 @@ public class DownFile {
 
 
     public static Connection doGet(String url) {
-       return doGet(url,10 * 1000);
+       return doGet(url,userAgentPC);
+    }
+    public static Connection doGet(String url,String userAgent) {
+       return doGet(url,10 * 1000,userAgent);
     }
 
-    public static Connection doGet(String url,int var1) {
+    public static Connection doGet(String url,int var1,String userAgent) {
         try {
             return Jsoup.connect(url).userAgent(userAgent).timeout(var1).ignoreContentType(true).referrer(referrer).followRedirects(true);
         }catch (Exception e){
@@ -54,7 +60,7 @@ public class DownFile {
     }
     private void init() throws IOException {
         tDownthreads = new Downthread[threadCount];
-        Connection.Response response = doGet(fileUrl.toString()).execute();
+        Connection.Response response = doGet(fileUrl.toString(),userAgentMobile).execute();
         if(fileUrl.toString().contains("aweme.snssdk.com")) {
             threadCount = 1;
         }
@@ -126,7 +132,7 @@ public class DownFile {
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) "
                         + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
                         + "Safari/537.36 OPR/30.0.1835.59");*/
-                Connection connection =doGet(fileUrl.toString());
+                Connection connection =doGet(fileUrl.toString(),userAgentMobile);
                  is = connection.execute().bodyStream();
                 if(threadCount < 2) {
                     // 将位置在 startPos - startPos 位置的数据读出写入

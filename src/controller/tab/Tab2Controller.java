@@ -257,7 +257,9 @@ public class Tab2Controller implements CallBack  {
 			}
 			txt3.setText("");
 			txt3.requestFocus();
-			return;
+			if(StringUtils.isEmpty(txt5.getText())){
+				return;
+			}
 		} else {
 			urls.add(keyword);
 
