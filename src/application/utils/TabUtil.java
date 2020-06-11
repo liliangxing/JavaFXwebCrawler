@@ -23,15 +23,21 @@ public class TabUtil {
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
         Matcher matcher = pattern.matcher(fileName2);
         String fileName = matcher.replaceAll(""); // 将匹配到的非法字符以空替换
-        if(fileName.contains("weishi")){
+        if(fileName2.contains("weishi")){
             Matcher m = Pattern.compile(".*\\/(.*\\.mp4).*").matcher(fileName2);
             if(m.find()){
                 fileName = m.group(1);
             }
-        }
-        Matcher m =Pattern.compile("video_id=([\\w-][^&]+)").matcher(fileName2);
-        if(m.find()){
-            fileName = m.group(1)+".mp4";
+        }else if(fileName2.contains("video_id=")) {
+            Matcher m = Pattern.compile("video_id=([\\w-][^&]+)").matcher(fileName2);
+            if (m.find()) {
+                fileName = m.group(1) + ".mp4";
+            }
+        }else if(fileName2.contains("video/tos")) {
+            Matcher m = Pattern.compile("\\/([\\w-][^\\/]+\\/[\\w-][^\\/]+)\\/video/tos").matcher(fileName2);
+            if (m.find()) {
+                fileName = m.group(1).replaceAll("\\/","") + ".mp4";
+            }
         }
         return fileName;
     }
