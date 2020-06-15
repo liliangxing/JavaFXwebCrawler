@@ -202,12 +202,15 @@ public class Tab2Controller implements CallBack  {
 			Document doc3;
 			Elements media;
 			doc3 = TabUtil.doGet(link);
-			media = doc3.select("[src]");
+			media = doc3.select("img");
 			for (Element img : media)
 			{
 				String width = img.attr("width");
 				String pic = img.attr("abs:src");
-				if(pic.contains("cover")||pic.endsWith(".js")
+				if(StringUtils.isEmpty(pic)){
+					pic = img.attr("abs:data-original");
+				}
+				if(pic.contains("cover")||pic.endsWith("_s.jpg")
 				||StringUtils.isNotBlank(mustInclude) && !pic.contains(mustInclude)
 				||(!StringUtils.isEmpty(width) && width.toLowerCase().contains("px") &&
 						Integer.parseInt(width.replaceAll("[\\D]+", ""))<300)
