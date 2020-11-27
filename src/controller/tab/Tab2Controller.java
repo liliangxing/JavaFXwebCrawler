@@ -53,6 +53,7 @@ public class Tab2Controller implements CallBack  {
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
 	private Map<Integer,String> pageLinks = new HashMap<>();
+	private Map<Integer,String> beginPageUrl = new HashMap<>();
 	public static Tab2Controller instance ;
 
 	BufferedImage image2 = null;
@@ -140,18 +141,26 @@ public class Tab2Controller implements CallBack  {
 			//继续
 			return true;
 		}else {
+			tempPage = maxPage;
 			int tempMax = doRemove();
 			if(tempMax > 0 ) {
 				firstGet(pageLinks.get(tempMax));
 				//继续
 				return true;
 			}else {
-				tempPage = maxPage;
-				firstGet(pageLinks.get(maxPage));
 				if(maxPage> tempPage){
 					firstGet(pageLinks.get(maxPage));
 					//继续
 					return true;
+				}else {
+					if((int)beginPageUrl.keySet().toArray()[0]!=1) {
+						firstGet(beginPageUrl.get(beginPageUrl.keySet().toArray()[0]));
+						//有爬到新的页面才继续，不然死循环在一个url
+						if(pageLinks.size()>1) {
+							//反向继续
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -160,6 +169,10 @@ public class Tab2Controller implements CallBack  {
 	}
 
 	private int doRemove(){
+		if(pageLinks.size()==1){
+			beginPageUrl.clear();
+			beginPageUrl.putAll(pageLinks);
+		}
 		pageLinks.remove(maxPage);
 		if(pageLinks.isEmpty()){
 			return 0;
