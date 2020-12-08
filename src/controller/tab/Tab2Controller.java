@@ -153,7 +153,8 @@ public class Tab2Controller implements CallBack  {
 					//继续
 					return true;
 				}else {
-					if((int)beginPageUrl.keySet().toArray()[0]!=1) {
+					int keySet = (int)beginPageUrl.keySet().toArray()[0];
+					if(keySet>2) {
 						firstGet(beginPageUrl.get(beginPageUrl.keySet().toArray()[0]));
 						//有爬到新的页面才继续，不然死循环在一个url
 						if(pageLinks.size()>1) {
