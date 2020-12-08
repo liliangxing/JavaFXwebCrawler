@@ -50,10 +50,11 @@ public class Tab2Controller implements CallBack  {
 
 	private int maxPage = 0;
 	private int includeCount = 0 ;
+	private int previousKeySet;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
-	private Map<Integer,String> pageLinks = new HashMap<>();
-	private Map<Integer,String> beginPageUrl = new HashMap<>();
+	private Map<Integer,String> pageLinks;
+	private Map<Integer,String> beginPageUrl;
 	public static Tab2Controller instance ;
 
 	BufferedImage image2 = null;
@@ -153,14 +154,12 @@ public class Tab2Controller implements CallBack  {
 					//继续
 					return true;
 				}else {
-					int keySet = (int)beginPageUrl.keySet().toArray()[0];
-					if(keySet>2) {
-						firstGet(beginPageUrl.get(beginPageUrl.keySet().toArray()[0]));
+					int pageKeySet = (int)beginPageUrl.keySet().toArray()[0];
+					if(pageKeySet != previousKeySet) {
+						firstGet(beginPageUrl.get(pageKeySet));
 						//有爬到新的页面才继续，不然死循环在一个url
-						if(pageLinks.size()>1) {
-							//反向继续
+							previousKeySet = pageKeySet;
 							return true;
-						}
 					}
 				}
 			}
@@ -193,7 +192,6 @@ public class Tab2Controller implements CallBack  {
 	private int GoogleImSelected(String site,Tab2Controller tab2Controller){
 		site = site.replaceAll("(.*_)[\\d]+.html","$1"+"2.html");
 		firstGet(site);
-
 		while(doFirstGet()) {
 
 		}
@@ -259,6 +257,9 @@ public class Tab2Controller implements CallBack  {
 		similarLinks.clear();
 		pageLinks.clear();
 		txtArea.clear();
+		previousKeySet=0;
+		beginPageUrl = new HashMap<>();
+		pageLinks= new HashMap<>();
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
 		keyword = txt3.getText();
