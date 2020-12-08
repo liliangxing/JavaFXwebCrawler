@@ -53,7 +53,7 @@ public class Tab2Controller implements CallBack  {
 	private int previousKeySet;
 	private Set<String> similarLinks = new TreeSet<>();
 	private Set<String> similarLinksPart = new TreeSet<>();
-	private Map<Integer,String> pageLinks;
+	private Map<Integer,String> pageLinks = new HashMap<>();
 	private Map<Integer,String> beginPageUrl;
 	public static Tab2Controller instance ;
 
@@ -259,7 +259,6 @@ public class Tab2Controller implements CallBack  {
 		txtArea.clear();
 		previousKeySet=0;
 		beginPageUrl = new HashMap<>();
-		pageLinks= new HashMap<>();
 	}
 	@FXML private synchronized void btn2searchClicked(ActionEvent event) throws IOException{
 		keyword = txt3.getText();
