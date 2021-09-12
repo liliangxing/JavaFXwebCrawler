@@ -401,7 +401,6 @@ public class Tab2Controller implements CallBack  {
 					DownFile.referrer = picUrl;
 					new DownFile(new URL(e.getUrl()), 1, theDir).startDown();
 				}catch(Exception err) {
-
 					System.out.println(err);
 				}
 			}catch(IOException e) {
