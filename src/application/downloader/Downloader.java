@@ -134,12 +134,8 @@ public class Downloader {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection)new URL(url).openConnection();
-            try{
-                conn.connect();
-            }catch (IOException ioException){
-                TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
-                conn.connect();
-            }
+            TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
+            conn.connect();
             System.out.println("* 连接服务器成功");
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL错误");
