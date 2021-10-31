@@ -76,9 +76,12 @@ class DownloadTask extends Thread {
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Range", "bytes=" + lowerBound + "-" + upperBound);
 //        System.out.println("thread_"+ threadId +": " + lowerBound + "-" + upperBound);
-        TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
-        conn.connect();
-
+        try{
+            conn.connect();
+        }catch (IOException ioException){
+            TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
+            conn.connect();
+        }
         int statusCode = conn.getResponseCode();
         if (HttpURLConnection.HTTP_PARTIAL != statusCode) {
             conn.disconnect();

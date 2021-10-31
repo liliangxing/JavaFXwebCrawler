@@ -134,8 +134,12 @@ public class Downloader {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection)new URL(url).openConnection();
-            TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
-            conn.connect();
+            try{
+                conn.connect();
+            }catch (IOException ioException){
+                TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
+                conn.connect();
+            }
             System.out.println("* 连接服务器成功");
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL错误");
@@ -147,7 +151,7 @@ public class Downloader {
     }
 
     public static void main(String[] args) throws IOException {
-        new Downloader("https://p.jpxgmn.top/Uploadfile/202101/26/04184317872.jpg").start();
+        new Downloader("https://img.xiublog.com:85/gallery/27329/30324/s/039.jpg").start();
     }
 }
 
