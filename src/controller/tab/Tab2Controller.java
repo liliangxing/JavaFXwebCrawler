@@ -7,10 +7,13 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import application.service.SystemClipboardMonitor;
 import application.utils.ClipboardUtil;
@@ -34,9 +37,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
+
 public class Tab2Controller implements CallBack  {
 
-	public static ExecutorService service = Executors.newFixedThreadPool(1);
+	public final static  ExecutorService threadPool =  Executors.newCachedThreadPool();
 	@FXML public  TextArea txtArea;
 	@FXML public  TextField txt3;
 	@FXML public  TextField txt4;
@@ -86,7 +93,8 @@ public class Tab2Controller implements CallBack  {
 		}else if(fileName.length()>2){
 			if(site.lastIndexOf(".") < 0) return;
 			mustInclude = site.substring(0,site.lastIndexOf(".") );
-			if( fileName.matches(".*[a-zA-z]+[\\d]+.*")){
+			if( fileName.matches(".*[a-zA-z]+[\\d]+.*")
+			&& !fileName.matches(".*[a-zA-z]+[\\d]{3}.*")){
 				mustInclude=  site.substring(0,site.lastIndexOf("/")+1)+fileName.replaceAll("[\\d]+","");
 			}
 		}
@@ -111,7 +119,7 @@ public class Tab2Controller implements CallBack  {
 						String[] mylinArr =lin.substring(lin.lastIndexOf("/") + 1, lin.lastIndexOf(".")).split("_");
 						String myLin;
 						if(mylinArr.length>1){
-							myLin = mylinArr[1];
+							myLin = mylinArr[mylinArr.length-1];
 						}else {
 							myLin =  mylinArr[0];
 						}
@@ -371,49 +379,56 @@ public class Tab2Controller implements CallBack  {
 		if(!TextUtils.isBlank(keyword)) {
 			DownFile.referrer = keyword;
 		}
+		int count = 10;
+		CountDownLatch latch = new CountDownLatch(count);
+		final int threadCountFinal = threadCount;
 		for(String picUrl:text.split("\n")){
-			if(TextUtils.isBlank(picUrl)) continue;
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					if(TextUtils.isBlank(picUrl)) return;
+					String[] prefix = getImageName(picUrl).split("\\.");
+					String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
+					if(prefix.length>1 &&prefix[1].contains("?")
+							&&prefix[1].contains("jpg")){
+						theDir=theDir+".jpg";
+					}
+					try {
+						File file =new File(theDir);
+						file.getParentFile().mkdirs();
+						if(file.exists()&& file.length() > 1024){
+							return;
+						}else {
+							file.createNewFile();
+						}
+						System.out.println(picUrl);
+						URL url = new URL(picUrl);
 
-			String[] prefix = getImageName(picUrl).split("\\.");
-
-			String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
-			if(prefix.length>1 &&prefix[1].contains("?")
-					&&prefix[1].contains("jpg")){
-				theDir=theDir+".jpg";
-			}
-			try {
-				File file =new File(theDir);
-				file.getParentFile().mkdirs();
-				if(file.exists()&& file.length() > 1024){
-					continue;
-				}else {
-					file.createNewFile();
+						new DownFile(url,threadCountFinal,theDir).startDown();
+						/*image2 = ImageIO.read(url);
+						ImageIO.write(image2, imgFormat, new File(theDir));*/
+						}catch(HttpStatusException e) {
+							System.out.println(e.getUrl());
+							try {
+								DownFile.referrer = picUrl;
+								new DownFile(new URL(e.getUrl()), 1, theDir).startDown();
+							}catch(Exception err) {
+								System.out.println(err);
+							}
+						}catch(IOException e) {
+							e.printStackTrace();
+						}catch(Exception e) {
+							System.out.println(e.toString());
+					}
+						latch.countDown();
 				}
-				System.out.println(picUrl);
-    			URL url = new URL(picUrl);
+			});
 
-				new DownFile(url,threadCount,theDir).startDown();
-        		/*image2 = ImageIO.read(url);
-    			ImageIO.write(image2, imgFormat, new File(theDir));*/
-			}catch(HttpStatusException e) {
-				System.out.println(e.getUrl());
-				try {
-					DownFile.referrer = picUrl;
-					new DownFile(new URL(e.getUrl()), 1, theDir).startDown();
-				}catch(Exception err) {
-					System.out.println(err.toString());
-				}
-			}catch(IOException e) {
-				System.out.println(e.toString());
-			}
-			catch(Exception e) {
-                System.out.println(e.toString());
-            }
 		}
-		/*alert.close();
-        alert.setHeaderText("Done!");
-        alert.showAndWait();*/
+		try {
+		latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
-	
-
 }

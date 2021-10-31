@@ -14,6 +14,10 @@ package application.utils;
 import controller.tab.Tab2Controller;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +43,6 @@ public class DownFile {
         this.threadCount = threadCount;
         this.pathName = pathName;
         init();
-
     }
 
 
@@ -58,13 +61,54 @@ public class DownFile {
         }
         return null;
     }
+
+    public static HttpURLConnection doGetHttpURLConnection(String url) {
+        return doGetHttpURLConnection(url,userAgentPC);
+    }
+    public static HttpURLConnection doGetHttpURLConnection(String url,String userAgent) {
+        return doGetHttpURLConnection(url,10 * 1000,userAgent);
+    }
+
+    public static HttpURLConnection doGetHttpURLConnection(String url,int timeOut,String userAgent) {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestProperty("User-Agent", userAgent);
+            conn.setRequestProperty("Referer", referrer);
+            conn.setConnectTimeout(timeOut);
+            conn.setInstanceFollowRedirects(true);
+            if (conn instanceof HttpsURLConnection) {
+                try {
+                    SSLContext sc = SSLContext.getInstance("SSL");
+                    // -------------------------new OrderInfoController替换成你当前类的类名即可--------------
+                    sc.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new 					java.security.SecureRandom());
+                    ((HttpsURLConnection) conn).setSSLSocketFactory(sc.getSocketFactory());
+                    // -------------------------new OrderInfoController替换成你当前类的类名即可--------------
+                    ((HttpsURLConnection) conn).setHostnameVerifier(new TrustAnyTrustManager.TrustAnyHostnameVerifier());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return conn;
+        }catch (Exception e){
+            TabUtil.printS(e.getMessage());
+        }
+        return null;
+    }
+
     private void init() throws IOException {
         tDownthreads = new Downthread[threadCount];
-        Connection.Response response = doGet(fileUrl.toString(),userAgentMobile).execute();
+        try {
+            Connection.Response response = doGet(fileUrl.toString(),userAgentMobile).execute();
+            fileLength =response.bodyAsBytes().length;
+        }catch (Exception e){
+            HttpURLConnection conn = doGetHttpURLConnection(fileUrl.toString(),userAgentMobile);
+            conn.connect();
+            long contentLength = conn.getContentLengthLong();//获取图片的实际长度
+            fileLength =(int) contentLength;
+        }
         if(fileUrl.toString().contains("aweme.snssdk.com")) {
             threadCount = 1;
         }
-        fileLength =response.bodyAsBytes().length;
         //fileLength = conn.getContentLength();
 
         System.out.println("文件长度" + fileLength);
@@ -132,8 +176,16 @@ public class DownFile {
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) "
                         + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
                         + "Safari/537.36 OPR/30.0.1835.59");*/
-                Connection connection =doGet(fileUrl.toString(),userAgentMobile);
-                 is = connection.execute().bodyStream();
+                /**/
+                try {
+                    Connection connection =doGet(fileUrl.toString(),userAgentMobile);
+                    is = connection.execute().bodyStream();
+                } catch (IOException ioException) {
+                    HttpURLConnection conn =doGetHttpURLConnection(fileUrl.toString(),userAgentMobile);
+                    conn.connect();
+                    InputStream inputStream = conn.getInputStream();
+                    is = inputStream;
+                }
                 if(threadCount < 2) {
                     // 将位置在 startPos - startPos 位置的数据读出写入
                     for (int b; (b = is.read()) != -1;) {
