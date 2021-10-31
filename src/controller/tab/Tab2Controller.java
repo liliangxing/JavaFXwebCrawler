@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import application.downloader.Downloader;
 import application.service.SystemClipboardMonitor;
 import application.utils.ClipboardUtil;
 import application.utils.DownFile;
@@ -397,7 +398,7 @@ public class Tab2Controller implements CallBack  {
 						}
 						System.out.println(picUrl);
 						URL url = new URL(picUrl);
-
+						//new Downloader(picUrl).start();
 						new DownFile(url,threadCountFinal,theDir).startDown();
 						/*image2 = ImageIO.read(url);
 						ImageIO.write(image2, imgFormat, new File(theDir));*/

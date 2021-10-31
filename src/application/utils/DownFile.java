@@ -35,7 +35,7 @@ public class DownFile {
     private final static String userAgentPC = "Mozilla/5.0 (Windows NT 6.3; WOW64) "
             + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 "
             + "Safari/537.36 OPR/30.0.1835.59";
-    private  static String userAgentMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
+    public  static String userAgentMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
     private Downthread[] tDownthreads;// 线程数组
 
     public DownFile(URL url, int threadCount, String pathName) throws IOException {
@@ -62,9 +62,6 @@ public class DownFile {
         return null;
     }
 
-    public static HttpURLConnection doGetHttpURLConnection(String url) {
-        return doGetHttpURLConnection(url,userAgentPC);
-    }
     public static HttpURLConnection doGetHttpURLConnection(String url,String userAgent) {
         return doGetHttpURLConnection(url,10 * 1000,userAgent);
     }
