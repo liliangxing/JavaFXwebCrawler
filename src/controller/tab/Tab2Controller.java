@@ -12,8 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import application.service.SystemClipboardMonitor;
 import application.utils.ClipboardUtil;
@@ -36,10 +34,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 
 public class Tab2Controller implements CallBack  {
 
