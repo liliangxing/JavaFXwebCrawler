@@ -131,16 +131,41 @@ public class Downloader {
         if (fileSize != 0) {
             return fileSize;
         }
+        long size = -1;
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection)new URL(url).openConnection();
-            TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
             conn.connect();
+            size = conn.getContentLengthLong();
             System.out.println("* 连接服务器成功");
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL错误");
         } catch (IOException e) {
             System.err.println("x 连接服务器失败["+ e.getMessage() +"]");
+        }
+        if(size == -1){
+            size = getFileSizeHttps();
+        }
+        return size;
+    }
+
+    /**
+     * @return 要下载的文件的尺寸
+     */
+    private long getFileSizeHttps() {
+        if (fileSize != 0) {
+            return fileSize;
+        }
+        HttpURLConnection conn = null;
+        try {
+            conn = (HttpURLConnection)new URL(url).openConnection();
+            TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
+            conn.connect();
+            System.out.println("* getFileSizeHttps连接服务器成功");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("getFileSizeHttpsURL错误");
+        } catch (IOException e) {
+            System.err.println("x getFileSizeHttps连接服务器失败["+ e.getMessage() +"]");
             return -1;
         }
         return conn.getContentLengthLong();
