@@ -72,43 +72,19 @@ class DownloadTask extends Thread {
      * @throws IOException 网络连接错误
      */
     private ReadableByteChannel connect() throws IOException {
-        try {
-            return connectHttp();
-        } catch (IOException e) {
-            return connectHttps();
-        }
-    }
-
-
-    /**
-     * 连接WEB服务器，并返回一个数据通道
-     * @return 返回通道
-     * @throws IOException 网络连接错误
-     */
-    private ReadableByteChannel connectHttp() throws IOException {
         HttpURLConnection conn = (HttpURLConnection)new URL(url).openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Range", "bytes=" + lowerBound + "-" + upperBound);
+//        System.out.println("thread_"+ threadId +": " + lowerBound + "-" + upperBound);
+        TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
         conn.connect();
+
         int statusCode = conn.getResponseCode();
         if (HttpURLConnection.HTTP_PARTIAL != statusCode) {
             conn.disconnect();
-            throw new IOException("connectHttp状态码错误：" + statusCode);
+            throw new IOException("状态码错误：" + statusCode);
         }
 
-        return Channels.newChannel(conn.getInputStream());
-    }
-
-    /**
-     * 连接WEB服务器，并返回一个数据通道
-     * @return 返回通道
-     * @throws IOException 网络连接错误
-     */
-    private ReadableByteChannel connectHttps() throws IOException {
-        HttpURLConnection conn = (HttpURLConnection)new URL(url).openConnection();
-        conn.setRequestMethod("GET");
-        TrustAnyTrustManager.getHttps(conn, DownFile.userAgentMobile);
-        conn.connect();
         return Channels.newChannel(conn.getInputStream());
     }
 }
