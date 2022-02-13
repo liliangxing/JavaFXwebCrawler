@@ -397,7 +397,7 @@ public class Tab2Controller implements CallBack  {
 						URL url = new URL(picUrl);
 						//new Downloader(picUrl).start();
 						new DownFile(url,1,theDir).startDown();
-						Thread.currentThread().sleep(100);
+						//Thread.currentThread().sleep(10);
 						/*image2 = ImageIO.read(url);
 						ImageIO.write(image2, imgFormat, new File(theDir));*/
 						}catch(HttpStatusException e) {
