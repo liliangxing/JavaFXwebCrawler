@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.*;
 
 import application.utils.DownFile;
+import application.utils.FileMoveUtil;
 import javafx.stage.DirectoryChooser;
 
 import org.apache.commons.lang3.StringUtils;
@@ -266,38 +267,30 @@ public class Tab1Controller {
     }
     
     @FXML private void btn1saveClicked(ActionEvent event) {
-    	System.out.println("Btn 1 save clicked");
-    	String theDir = txt2.getText()+"/"+txt1.getText();
-    	File f = new File(theDir);
-        System.out.println("Directory made: " + f.mkdirs());
+        System.out.println("Btn 1 save clicked");
+        String oldPath = txt2.getText();
+        String preFixPath = oldPath;
+        String documentName = null;
+        if (oldPath.endsWith(File.separator)) {
+            preFixPath = oldPath.substring(0, oldPath.lastIndexOf(File.separator));
+        }
+        documentName = oldPath.substring(oldPath.lastIndexOf(File.separator) + 1);
 
-    	for(int i=0; i<media_size; i++){
-    		try{
-    		    //imgFormat = list.get(i).substring(list.get(i).length()-3);
-                String imageName = list.get(i).substring(list.get(i).lastIndexOf("/") + 1 );
 
-				System.out.println(imageName);
-
-				URL urlImage = new URL(list.get(i));
-                InputStream in = urlImage.openStream();
-                OutputStream out = new BufferedOutputStream(new FileOutputStream( theDir + "/" + imageName));
-                for (int b; (b = in.read()) != -1;) {
-                    out.write(b);
-                }
-                out.close();
-                in.close();
-    		//System.out.println(list.get(i));
-    		}
-    		catch(Exception e){
-				System.out.println(e.toString());
-    		}
-    	}
-    	/*Alert alert = new Alert(AlertType.INFORMATION);
-    	alert.setTitle("Save images");
-        alert.setHeaderText("Done!");
-        alert.setWidth(150);
-        alert.setHeight(100);
-        alert.showAndWait();*/
+        File a = new File(oldPath);
+        String[] file = a.list();
+        String fileName = null;
+        String newPath = null;
+        int fileNum = StringUtils.isNotBlank(txt1.getText()) && txt1.getText().matches("[0-9]+") ? Integer.parseInt(txt1.getText()): 500 ;
+        for (int i = 0; i < file.length; i++) {
+            if(i%fileNum == 0) {
+                newPath = preFixPath + File.separator + documentName + "_"+i/fileNum;
+                File f = new File(newPath);
+                System.out.println("Directory made: " + f.mkdirs());
+            }
+            //如果以分隔符结尾,
+            fileName =  file[i];
+            FileMoveUtil.removefile(fileName, oldPath, newPath);
+        }
     }
-
 }

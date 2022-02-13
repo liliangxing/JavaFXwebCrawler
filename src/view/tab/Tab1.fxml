@@ -16,9 +16,9 @@
                   <Button fx:id="btn1Search" layoutX="62.0" layoutY="89.0" mnemonicParsing="false" onAction="#btn1SearchClicked" text="Search" />
                   <Separator layoutY="148.0" prefHeight="3.0" prefWidth="145.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="147.5" />
                   <Label fx:id="lbl2" layoutX="34.0" layoutY="182.0" text="Click to save images" />
-                  <Button fx:id="btn1save" disable="true" layoutX="62.0" layoutY="290.0" mnemonicParsing="false" onAction="#btn1saveClicked" prefHeight="25.0" prefWidth="52.0" text="Save" />
-                  <TextField fx:id="txt2" layoutX="13.0" layoutY="209.0" promptText="Choose Folder..." />
-                  <Button fx:id="btn1browse" layoutX="14.0" layoutY="234.0" mnemonicParsing="false" onAction="#btn1browseClicked" prefHeight="25.0" prefWidth="149.0" text="Browse..." />
+                  <Button fx:id="btn1save" disable="false" layoutX="62.0" layoutY="290.0" mnemonicParsing="false" onAction="#btn1saveClicked" prefHeight="25.0" prefWidth="52.0" text="Save" />
+                   <TextField fx:id="txt2" layoutX="13.0" layoutY="209.0" promptText="Choose Folder...">E:\</TextField>
+                  <Button fx:id="btn1browse" layoutX="14.0" layoutY="246.0" mnemonicParsing="false" onAction="#btn1browseClicked" prefHeight="25.0" prefWidth="149.0" text="Browse..." />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

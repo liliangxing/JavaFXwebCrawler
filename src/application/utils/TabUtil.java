@@ -20,10 +20,24 @@ public class TabUtil {
     }
 
     public static String doMatchPath(String fileName2) {
+        String fileName = null;
+        String tempName = fileName2;
+        String lastName = fileName2.substring(tempName.lastIndexOf("/")+1);
+        while (true) {
+            if(lastName.length()> 8) {
+                fileName = lastName;
+                break;
+            }else {
+                tempName = tempName.substring(0, tempName.lastIndexOf("/"));
+                lastName = fileName2.substring(tempName.lastIndexOf("/")+1);
+            }
+        }
+        // fileName处理
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
-        Matcher matcher = pattern.matcher(fileName2);
-        String fileName = matcher.replaceAll(""); // 将匹配到的非法字符以空替换
-        if(fileName2.contains("weishi")){
+        Matcher matcher = pattern.matcher(fileName);
+        fileName = matcher.replaceAll("_"); // 将匹配到的非法字符以空替换
+
+       if(fileName2.contains("weishi")){
             Matcher m = Pattern.compile(".*\\/(.*\\.mp4).*").matcher(fileName2);
             if(m.find()){
                 fileName = m.group(1);

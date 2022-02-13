@@ -23,7 +23,7 @@
 		<jackson.version>2.11.0</jackson.version>
 		<maven.encoding>UTF-8</maven.encoding>
 		
-		<deploy.target.dir>D:/99.tmp/spring_batch</deploy.target.dir>
+		<deploy.target.dir>D:/99.tmp/spring_batch_200</deploy.target.dir>
 		<jar.name>pethub-batch</jar.name>
 		
 	</properties>
