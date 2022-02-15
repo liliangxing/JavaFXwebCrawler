@@ -22,7 +22,7 @@
                   <Button fx:id="btn2search" layoutX="332.0" layoutY="62.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btn2searchClicked" prefHeight="35.0" prefWidth="70.0" text="Search" />
 
 
-                  <TextField fx:id="txt4" layoutX="469.0" layoutY="52.0" prefHeight="25.0" prefWidth="250.0" promptText="Choose folder...">E:\</TextField>
+                  <TextField fx:id="txt4" layoutX="469.0" layoutY="52.0" prefHeight="25.0" prefWidth="250.0" promptText="Choose folder...">E:\AndroidProject\E</TextField>
                   <Button fx:id="btn2browse" layoutX="745.0" layoutY="52.0" mnemonicParsing="false" onAction="#btn2browseClicked" text="Browse..." />
 
 
