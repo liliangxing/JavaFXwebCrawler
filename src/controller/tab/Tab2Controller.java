@@ -364,7 +364,7 @@ public class Tab2Controller implements CallBack  {
 
 	@FXML private void btn2saveClicked(ActionEvent event) {
 		System.out.println("Btn 2 save clicked");
-		int threadCount = 1;
+		int threadCount = 3;
 		String threadCountStr = txt6.getText();
 		if(StringUtils.isNotBlank(threadCountStr)){
 			threadCount = Integer.parseInt(threadCountStr);
@@ -374,9 +374,13 @@ public class Tab2Controller implements CallBack  {
 		if(!TextUtils.isBlank(keyword)) {
 			DownFile.referrer = keyword;
 		}
-
+		int count = 10;
+		CountDownLatch latch = new CountDownLatch(count);
+		final int threadCountFinal = threadCount;
 		for(String picUrl:text.split("\n")){
-
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
 					if(TextUtils.isBlank(picUrl)) return;
 					String[] prefix = getImageName(picUrl).split("\\.");
 					String theDir = txt4.getText()+"\\"+ TabUtil.doDomain(picUrl)+"\\"+TabUtil.doMatchPath(picUrl);
@@ -396,8 +400,7 @@ public class Tab2Controller implements CallBack  {
 						System.out.println(picUrl);
 						URL url = new URL(picUrl);
 						//new Downloader(picUrl).start();
-						new DownFile(url,3,theDir).startDown();
-						//Thread.currentThread().sleep(10);
+						new DownFile(url,threadCountFinal,theDir).startDown();
 						/*image2 = ImageIO.read(url);
 						ImageIO.write(image2, imgFormat, new File(theDir));*/
 						}catch(HttpStatusException e) {
@@ -411,8 +414,19 @@ public class Tab2Controller implements CallBack  {
 						}catch(IOException e) {
 							e.printStackTrace();
 						}catch(Exception e) {
-						System.out.println(e);
+							System.out.println(e.toString());
+					}finally {
+						latch.countDown();
 					}
+
+				}
+			});
+
+		}
+		try {
+		latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }
