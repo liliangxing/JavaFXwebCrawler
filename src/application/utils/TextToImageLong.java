@@ -26,7 +26,7 @@ public class TextToImageLong {
     /**
      * 每一行的高度
      */
-    private static int line_height = 50;
+    private static int line_height = Constant.lineHeight;
     /**
      * 字体
      */
@@ -72,7 +72,9 @@ public class TextToImageLong {
         int image_height = strList.size() * line_height + line_height;
 
         //每张图片有多少行文字
-        int every_line = image_height / line_height;
+        int every_line =
+                (int) ((image_height - (Constant.lineHeightMulti - 1) * line_height) / line_height);
+        // 每张图片有多少行文字
 
 
         for (int m = 0; m < 1; m++) {
@@ -97,7 +99,14 @@ public class TextToImageLong {
                 if (strList.size() - 1 >= index) {
 //                    System.out.println("每行实际=" + newList.get(index).length());
                     int x = (int) (Constant.fontSize * Constant.leak);
-                    g.drawString(strList.get(index), x, line_height * (i + 1));
+                    int lineHeight;
+                    if (i == 0) {
+                        lineHeight = (int) (Constant.lineHeightMulti * line_height) * (i + 1);
+                    } else {
+                        lineHeight =
+                                line_height * (i + 1) + (int)((Constant.lineHeightMulti - 1) * line_height);
+                    }
+                    g.drawString(strList.get(index), x, lineHeight);
                 }
             }
             g.dispose();

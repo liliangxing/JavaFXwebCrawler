@@ -29,9 +29,10 @@ public class TextToImage {
 
     public static void generateImage(String message) {
         String[] strArr = message.split("\n");
-        int image_height = Constant.imageFeight; // 每张图片的高度
-        int line_height = 50; // 每行或者每个文字的高度
-        int every_line = image_height / line_height; // 每张图片有多少行文字
+        int image_height = Constant.imageHeight; // 每张图片的高度
+        int line_height = Constant.lineHeight; // 每行或者每个文字的高度
+        int every_line =
+                (int) ((image_height - (Constant.lineHeightMulti - 1) * line_height) / line_height);
 
         createImage(strArr, Constant.NORMAL_FONT, 720, image_height, every_line,
                 line_height);
@@ -97,7 +98,14 @@ public class TextToImage {
                 if (newList.size() - 1 >= index) {
                     System.out.println("每行实际=" + newList.get(index).length());
                     int x = (int) (Constant.fontSize * Constant.leak);
-                    g.drawString(newList.get(index), x, line_height * (i + 1));
+                    int lineHeight;
+                    if (i == 0) {
+                        lineHeight = (int) (Constant.lineHeightMulti * line_height) * (i + 1);
+                    } else {
+                        lineHeight =
+                                line_height * (i + 1) + (int) ((Constant.lineHeightMulti - 1) * line_height);
+                    }
+                    g.drawString(newList.get(index), x, lineHeight);
                 }
             }
             g.dispose();

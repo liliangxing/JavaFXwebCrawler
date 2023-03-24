@@ -22,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.TextUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -385,8 +384,8 @@ public class Tab2Controller implements CallBack {
             threadCount = Integer.parseInt(threadCountStr);
         }
         String text = txtArea.getText();
-        if (TextUtils.isBlank(text)) return;
-        if (!TextUtils.isBlank(keyword)) {
+        if (StringUtils.isBlank(text)) return;
+        if (!StringUtils.isBlank(keyword)) {
             DownFile.referrer = keyword;
         }
         int count = 1;
@@ -396,7 +395,7 @@ public class Tab2Controller implements CallBack {
             threadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (TextUtils.isBlank(picUrl)) return;
+                    if (StringUtils.isBlank(picUrl)) return;
                     String[] prefix = getImageName(picUrl).split("\\.");
                     String theDir = txt4.getText() + "\\" + TabUtil.doDomain(picUrl) + "\\" + TabUtil.doMatchPath(picUrl);
                     if (prefix.length > 1 && prefix[1].contains("?")
